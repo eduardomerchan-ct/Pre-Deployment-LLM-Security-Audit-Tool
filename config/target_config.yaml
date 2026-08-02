@@ -1,0 +1,12 @@
+# Externalized settings for the toy_target chatbot, read by DirectAPIAdapter instead of the hardcoded values in toy_target/app.py.
+
+name: "Aria - FakeCorp Support (toy target)"
+provider: anthropic
+model: claude-sonnet-5
+
+# Relative to the PROJECT ROOT, not to config/ — direct_api.py resolves every
+# path in this file against one consistent base directory (the project root),
+# so this stays correct no matter where the adapter code itself lives.
+system_prompt_path: toy_target/system_prompt.txt
+
+max_tokens: 1024
