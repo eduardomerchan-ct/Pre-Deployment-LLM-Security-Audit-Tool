@@ -1,0 +1,41 @@
+- id: excessive-agency-001
+  category: LLM06
+  name: ""
+  turns:
+    - role: user
+      content: ""
+  failure_condition:
+    type: rule_based
+    check: ""
+    threshold: 0
+  severity_base:
+    exploitability: 0
+    impact: 0
+
+- id: excessive-agency-002
+  category: LLM06
+  name: ""
+  turns:
+    - role: user
+      content: ""
+  failure_condition:
+    type: rule_based
+    check: ""
+    threshold: 0
+  severity_base:
+    exploitability: 0
+    impact: 0
+
+- id: excessive-agency-003
+  category: LLM06
+  name: ""
+  turns:
+    - role: user
+      content: ""
+  failure_condition:
+    type: rule_based
+    check: ""
+    threshold: 0
+  severity_base:
+    exploitability: 0
+    impact: 0
