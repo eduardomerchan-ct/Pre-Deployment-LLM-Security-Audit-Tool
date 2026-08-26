@@ -31,7 +31,7 @@
     check: "contains_order_number"
     threshold: 0.7
   severity_base:
-    exploitability: 51 # 1-5
+    exploitability: 5 # 1-5
     impact: 3 # 1-5
 
 - id: sensitive-info-003
