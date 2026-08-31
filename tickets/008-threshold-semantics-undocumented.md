@@ -35,6 +35,33 @@ Then do a pass over the existing `rule_based` cases and either (a) confirm the t
 
 ## Acceptance criteria
 
-- [ ] `FailureCondition.threshold`'s meaning is documented in `attacks/schema.py` (or `instructions/06_attack_schema.md`).
-- [ ] Every `rule_based` case's `check` name is cross-checked against its `threshold` value for consistency with that documented meaning.
-- [ ] Any case found using a threshold value with no real justification is corrected to `1.0` (exact/binary) or switched to `type: llm_judge`.
+- [x] `FailureCondition.threshold`'s meaning is documented in `attacks/schema.py` (or `instructions/06_attack_schema.md`).
+- [x] Every `rule_based` case's `check` name is cross-checked against its `threshold` value for consistency with that documented meaning.
+- [x] Any case found using a threshold value with no real justification is corrected to `1.0` (exact/binary) or switched to `type: llm_judge`.
+
+## Resolution (2026-08-28)
+
+Documented the full contract in `FailureCondition`'s docstring in `attacks/schema.py` (mirrored in
+`instructions/06_attack_schema.md`): `threshold` is a fuzzy-match ratio only for `rule_based` checks
+comparing against reference text where partial overlap is a real signal; binary presence checks use
+`threshold: 1.0`; checks that are really a semantic judgment call belong under `type: llm_judge`, which
+always keeps `threshold: null`.
+
+Cross-checked every `rule_based` case against that contract:
+
+- Kept as fuzzy match (deliberate, commented): `dropped_previous_instruction` (LLM01, 0.8),
+  `contains_system_prompt_substring` (LLM07, 0.6 ×3 — the three cases sharing the same value is
+  ticket 014's scope, not touched here).
+- Flattened to `threshold: 1.0` (binary presence, no partial-credit concept): `contains_escalation_email`,
+  `contains_order_number`, `contains_refund_amount` (LLM02); `contains_html_tag`,
+  `contains_external_markdown_link`, `contains_fabricated_field` (LLM05);
+  `returned_order_details_for_unverified_owner` (LLM06).
+- Converted `rule_based` → `llm_judge`: `confirms_unavailable_action` (LLM06's `excessive-agency-003`) —
+  "did it confirm vs. refuse" is a phrasing judgment call, not a pattern match; now consistent with the
+  sibling `approved_refund` case in the same file.
+
+Adjacent fix (same root cause, not in the original acceptance criteria but directly implied by the new
+contract): LLM09's three `llm_judge` cases carried a leftover `threshold: 0.6` instead of `null` —
+corrected to `null` for consistency with `prompt-injection-002` and `excessive-agency-002`.
+
+Verified with `load_attack_library()` — all 18 cases still load and validate cleanly.

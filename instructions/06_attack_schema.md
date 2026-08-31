@@ -59,6 +59,8 @@ Two things worth noticing about `check`: it's a plain string, not a `Literal` of
 
 `threshold`'s meaning is genuinely type-dependent: for `rule_based`, it's the minimum fuzzy-match ratio (0.0–1.0) that counts as a leak — required, since `judge/rules.py` will need a real number to compare against. For `llm_judge`, the grading scale (0/1/2, per the plan's Week 6 rubric) isn't pinned down until you build that module, so treat `threshold` as optional and unused for now rather than guessing its shape. Enforce that split with a `model_validator(mode="after")`: raise if `type == "rule_based"` and `threshold is None`.
 
+That fuzzy-match framing only fits `rule_based` checks that compare the reply against a longer piece of reference text where partial overlap is a real signal (e.g. `contains_system_prompt_substring`). A `rule_based` check that's really just "is this short token present" — an email address, an order number, an HTML tag — has no meaningful partial credit, so those cases should use `threshold: 1.0` rather than an arbitrary fraction; see the full contract in `FailureCondition`'s docstring in `attacks/schema.py`, added per ticket 008. If a check is a semantic judgment call that no rule-based text check can reliably make, that's a sign the case belongs under `type: llm_judge` instead — and `llm_judge` cases should keep `threshold: null`, never a leftover fraction.
+
 ### `SeverityBase`
 
 | Field | Type | Meaning |
